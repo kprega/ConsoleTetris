@@ -10,23 +10,24 @@ namespace ConsoleTetris
     {
         static void Main(string[] args)
         {
-            var klocek = new Brick();
-            while(klocek != null)
+            Console.CursorVisible = false;
+            
+            var brick = new Brick();
+            while(brick != null)
             {
                 switch (Console.ReadKey().Key)
                 {
                     case ConsoleKey.DownArrow:
-                        klocek.MoveDown();
+                        brick.MoveDown();
                         break;
                     case ConsoleKey.RightArrow:
-                        klocek.MoveRight();
+                        brick.MoveRight();
                         break;
                     case ConsoleKey.LeftArrow:
-                        klocek.MoveLeft();
+                        brick.MoveLeft();
                         break;
                     case ConsoleKey.Spacebar:
-                        klocek.MoveDown();
-                        klocek.MoveDown();
+                        brick.MoveDownFast();
                         break;
                     default:
                         break;

@@ -8,16 +8,15 @@ namespace ConsoleTetris
 {
     public class Brick : IBrick
     {
+        private readonly char Pixel = '█';
+
         private ConsoleColor Color { get; set; }
-        private char Pixel { get; set; }
         private int LocationX { get; set; }
         private int LocationY { get; set; }
 
-
         public Brick()
         {
-            this.Color = ConsoleColor.Magenta;
-            this.Pixel = '█';
+            this.Color = GetRandomColor();
             this.LocationX = 0;
             this.LocationY = 0;
             Console.ForegroundColor = this.Color;
@@ -26,35 +25,48 @@ namespace ConsoleTetris
 
         public void MoveDown()
         {
-            Console.Clear();
-            Console.SetCursorPosition(this.LocationX, ++this.LocationY);
-            Console.Write(this.Pixel);
+            this.Move(0, 1);
         }
 
         public void MoveRight()
         {
-            Console.Clear();
-            Console.SetCursorPosition(++this.LocationX, this.LocationY);
-            Console.Write(this.Pixel);
+            this.Move(1, 0);
         }
 
         public void MoveLeft()
         {
-            Console.Clear();
-            Console.SetCursorPosition(--this.LocationX, this.LocationY);
-            Console.Write(this.Pixel);
+            this.Move(-1, 0);
         }
 
         public void MoveDownFast()
         {
-            Console.Clear();
-            Console.SetCursorPosition(this.LocationX, this.LocationY += 2);
-            Console.Write(this.Pixel);
+            this.Move(0, 2);
         }
 
         public void Rotate()
         {
             throw new NotImplementedException();
+        }
+
+        private ConsoleColor GetRandomColor()
+        {
+            var numberOfAvailableColors = Enum.GetValues(typeof(ConsoleColor)).Length - 1;
+            var randomIndex = Math.Floor(new Random().NextDouble() * numberOfAvailableColors + 1);
+            return (ConsoleColor)randomIndex;
+        }
+
+        private void Move(int dX, int dY)
+        {
+            if(this.LocationX == 0 && dX < 0)
+            {
+                return;
+            }
+            Console.SetCursorPosition(this.LocationX, this.LocationY);
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write(' ');
+            Console.ForegroundColor = this.Color;
+            Console.SetCursorPosition(this.LocationX += dX, this.LocationY += dY);
+            Console.Write(this.Pixel);
         }
     }
 }
