@@ -6,46 +6,27 @@ using System.Threading.Tasks;
 
 namespace ConsoleTetris
 {
-    public class Brick : IBrick
+    public class Brick
     {
         private readonly char Pixel = '█';
 
-        private ConsoleColor Color { get; set; }
-        private int LocationX { get; set; }
-        private int LocationY { get; set; }
+        public ConsoleColor Color { get; private set; }
+        public int LocationX { get; private set; }
+        public int LocationY { get; private set; }
 
-        public Brick()
+        /// <summary>
+        /// Creates new instance of Brick
+        /// </summary>
+        /// <param name="X">Left offset</param>
+        /// <param name="Y">Top offset</param>
+        public Brick(int X, int Y)
         {
             this.Color = GetRandomColor();
-            this.LocationX = 0;
-            this.LocationY = 0;
+            this.LocationX = X;
+            this.LocationY = Y;
+            Console.SetCursorPosition(this.LocationX, this.LocationY);
             Console.ForegroundColor = this.Color;
             Console.Write(this.Pixel);
-        }
-
-        public void MoveDown()
-        {
-            this.Move(0, 1);
-        }
-
-        public void MoveRight()
-        {
-            this.Move(1, 0);
-        }
-
-        public void MoveLeft()
-        {
-            this.Move(-1, 0);
-        }
-
-        public void MoveDownFast()
-        {
-            this.Move(0, 2);
-        }
-
-        public void Rotate()
-        {
-            throw new NotImplementedException();
         }
 
         private ConsoleColor GetRandomColor()
@@ -55,12 +36,8 @@ namespace ConsoleTetris
             return (ConsoleColor)randomIndex;
         }
 
-        private void Move(int dX, int dY)
+        public void Move(int dX, int dY)
         {
-            if(this.LocationX == 0 && dX < 0)
-            {
-                return;
-            }
             Console.SetCursorPosition(this.LocationX, this.LocationY);
             Console.ForegroundColor = ConsoleColor.Black;
             Console.Write(' ');

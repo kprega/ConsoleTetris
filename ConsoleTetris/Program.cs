@@ -10,29 +10,9 @@ namespace ConsoleTetris
     {
         static void Main(string[] args)
         {
-            Console.CursorVisible = false;
-            
-            var brick = new Brick();
-            while(brick != null)
-            {
-                switch (Console.ReadKey().Key)
-                {
-                    case ConsoleKey.DownArrow:
-                        brick.MoveDown();
-                        break;
-                    case ConsoleKey.RightArrow:
-                        brick.MoveRight();
-                        break;
-                    case ConsoleKey.LeftArrow:
-                        brick.MoveLeft();
-                        break;
-                    case ConsoleKey.Spacebar:
-                        brick.MoveDownFast();
-                        break;
-                    default:
-                        break;
-                }
-            }
+            var game = new Game();
+            game.Start();
+
         }
     }
 }
