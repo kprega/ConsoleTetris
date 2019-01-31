@@ -8,7 +8,7 @@ namespace ConsoleTetris
 {
     public class Brick
     {
-        private readonly char Pixel = '█';
+        public readonly char Pixel = '█';
 
         public ConsoleColor Color { get; private set; }
         public int LocationX { get; private set; }
