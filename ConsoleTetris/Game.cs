@@ -25,7 +25,7 @@ namespace ConsoleTetris
         public int Score { get; private set; }
         public int Level { get; private set; }
 
-        private Brick Brick { get; set; }
+        private Brick ActiveBrick { get; set; }
         private int[,] FieldStatus { get; set; }
         private ConsoleColor[,] FieldColor { get; set; } 
 
@@ -93,32 +93,35 @@ namespace ConsoleTetris
 
         public void Start()
         {
-            this.Brick = new Brick(X: WIDTH/2, Y: 1);
+            this.ActiveBrick = new Brick(X: WIDTH/2, Y: 1);
 
-            while (this.Brick != null)
+            while (this.ActiveBrick != null)
             {
                 switch (Console.ReadKey().Key)
                 {
                     case ConsoleKey.DownArrow:
-                        if(this.Brick.LocationY != HEIGHT && 
-                            FieldStatus[this.Brick.LocationX - 1, this.Brick.LocationY] == 0)
+                        if(this.ActiveBrick.Pixels.All(p => p[1] != HEIGHT) && 
+                           this.ActiveBrick.Pixels.All(p => FieldStatus[p[0] - 1, p[1]] == 0))
                         {
-                            this.Brick.Move(0,1);
+                            this.MoveActiveBrick(0,1);
                         }
                         break;
                     case ConsoleKey.RightArrow:
-                        if(this.Brick.LocationX < WIDTH && 
-                            FieldStatus[this.Brick.LocationX, this.Brick.LocationY - 1] == 0)
+                        if(this.ActiveBrick.Pixels.All(p => p[0] < WIDTH) &&
+                           this.ActiveBrick.Pixels.All(p => FieldStatus[p[0], p[1] - 1] == 0))
                         {
-                            this.Brick.Move(1, 0);
+                            this.MoveActiveBrick(1, 0);
                         }
                         break;
                     case ConsoleKey.LeftArrow:
-                        if(this.Brick.LocationX > 1 && 
-                            FieldStatus[this.Brick.LocationX - 2, this.Brick.LocationY - 1] == 0)
+                        if(this.ActiveBrick.Pixels.All(p => p[0] > 1) &&
+                           this.ActiveBrick.Pixels.All(p => FieldStatus[p[0] - 2, p[1] - 1] == 0))
                         {
-                            this.Brick.Move(-1, 0);
+                            this.MoveActiveBrick(-1, 0);
                         }
+                        break;
+                    case ConsoleKey.UpArrow:
+                        RotateActiveBrick();
                         break;
                     default:
                         break;
@@ -126,25 +129,32 @@ namespace ConsoleTetris
 
                 RepairRightEdge();
 
-                if(this.Brick.LocationY == HEIGHT || 
-                    FieldStatus[this.Brick.LocationX - 1, this.Brick.LocationY] == 1)
+                if (this.ActiveBrick.Pixels.Any(p => p[1] == HEIGHT) ||
+                    this.ActiveBrick.Pixels.Any(p => FieldStatus[p[0] - 1, p[1]] == 1))
                 {
-                    this.FieldStatus[this.Brick.LocationX - 1, this.Brick.LocationY - 1] = 1;
-                    this.FieldColor[this.Brick.LocationX - 1, this.Brick.LocationY - 1] = this.Brick.Color;
+                    foreach (int[] point in this.ActiveBrick.Pixels)
+                    {
+                        this.FieldStatus[point[0] - 1, point[1] - 1] = 1;
+                        this.FieldColor[point[0] - 1, point[1] - 1] = this.ActiveBrick.Color;
+                    }
+                    
                     for (int y = 0; y < HEIGHT; y++)
                     {
-                        if(this.CheckLine(y))
+                        if (this.CheckLine(y))
                         {
                             this.ClearLine(y);
-                            this.ShiftBricks();
+                            this.ShiftBricks(y);
                             this.IncreaseScore();
+                            if (this.Score % (this.Level * 100) == 0)
+                            {
+                                this.IncreaseLevel();
+                            }
                         }
                     }
-                    this.Brick = new Brick(X: WIDTH / 2, Y: 1);
+                    this.ActiveBrick = new Brick(X: WIDTH / 2, Y: 1);
                 }
             }
         }
-
 
         /// <summary>
         /// Checks if given line is complete
@@ -178,17 +188,18 @@ namespace ConsoleTetris
         /// <summary>
         /// Shifts bricks remaining on board, when a line is cleared. 
         /// </summary>
-        private void ShiftBricks()
+        /// <param name="y">Index of cleared line.</param>
+        private void ShiftBricks(int y)
         {
-            for (int y = HEIGHT - 1; y > 0; y--)
+            for (int i = y; i > 0; i--)
             {
                 for (int x = 0; x < WIDTH; x++)
                 {
-                    this.FieldStatus[x, y] = this.FieldStatus[x, y - 1];
-                    this.FieldColor[x, y] = this.FieldColor[x, y - 1];
-                    Console.SetCursorPosition(x + 1, y + 1);
-                    Console.ForegroundColor = this.FieldColor[x, y];
-                    Console.Write(this.Brick.Pixel);
+                    this.FieldStatus[x, i] = this.FieldStatus[x, i - 1];
+                    this.FieldColor[x, i] = this.FieldColor[x, i - 1];
+                    Console.SetCursorPosition(x + 1, i + 1);
+                    Console.ForegroundColor = this.FieldColor[x, i];
+                    Console.Write(this.ActiveBrick.Pixel);
                 }
             }
         }
@@ -209,6 +220,32 @@ namespace ConsoleTetris
         {
             this.Level += 1;
             this.DrawLevel();
+        }
+
+        /// <summary>
+        /// Moves current brick using given displacement parameters.
+        /// </summary>
+        /// <param name="dX">Number of pixels to move right.</param>
+        /// <param name="dY">Number of pixels to move down.</param>
+        private void MoveActiveBrick(int dX, int dY)
+        {
+            this.ActiveBrick.Erase();
+            foreach (int[] point in this.ActiveBrick.Pixels)
+            {
+                point[0] += dX;
+                point[1] += dY;
+            }
+            this.ActiveBrick.Write();
+        }
+
+        /// <summary>
+        /// Rotates current brick 90° counterclockwise.
+        /// </summary>
+        private void RotateActiveBrick()
+        {
+            this.ActiveBrick.Erase();
+            this.ActiveBrick.Rotate();
+            this.ActiveBrick.Write();
         }
     }
 }

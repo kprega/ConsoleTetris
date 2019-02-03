@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace ConsoleTetris
 {
-    public class Brick
+    class Brick
     {
         public readonly char Pixel = '█';
 
         public ConsoleColor Color { get; private set; }
-        public int LocationX { get; private set; }
-        public int LocationY { get; private set; }
+        public int[][] Pixels { get; set; }
+        private Shape Shape { get; set; }
 
         /// <summary>
         /// Creates new instance of Brick
@@ -22,28 +22,80 @@ namespace ConsoleTetris
         public Brick(int X, int Y)
         {
             this.Color = GetRandomColor();
-            this.LocationX = X;
-            this.LocationY = Y;
-            Console.SetCursorPosition(this.LocationX, this.LocationY);
-            Console.ForegroundColor = this.Color;
-            Console.Write(this.Pixel);
+            this.Shape = new Shape();
+            this.Pixels = CalculateBrickPosition(X, Y);
+            this.Write();
         }
 
+        /// <summary>
+        /// Chooses a random color for the brick.
+        /// </summary>
+        /// <returns>A random ConsoleColor, except black and white.</returns>
         private ConsoleColor GetRandomColor()
         {
-            var numberOfAvailableColors = Enum.GetValues(typeof(ConsoleColor)).Length - 1;
-            var randomIndex = Math.Floor(new Random().NextDouble() * numberOfAvailableColors + 1);
+            var numberOfAvailableColors = Enum.GetValues(typeof(ConsoleColor)).Length;
+            var randomIndex = new Random().Next(1, numberOfAvailableColors - 2);
             return (ConsoleColor)randomIndex;
         }
 
-        public void Move(int dX, int dY)
+        /// <summary>
+        /// Erases brick from the board.
+        /// </summary>
+        public void Erase()
         {
-            Console.SetCursorPosition(this.LocationX, this.LocationY);
-            Console.ForegroundColor = ConsoleColor.Black;
-            Console.Write(' ');
-            Console.ForegroundColor = this.Color;
-            Console.SetCursorPosition(this.LocationX += dX, this.LocationY += dY);
-            Console.Write(this.Pixel);
+            Console.ResetColor();
+            foreach (int[] point in this.Pixels)
+            {
+                Console.SetCursorPosition(point[0], point[1]);
+                Console.Write(' ');
+            }
         }
+
+        /// <summary>
+        /// Writes brick into the board.
+        /// </summary>
+        public void Write()
+        {
+            Console.ForegroundColor = this.Color;
+            foreach (int[] point in this.Pixels)
+            {
+                Console.SetCursorPosition(point[0], point[1]);
+                Console.Write(this.Pixel);
+            }
+        }
+
+        /// <summary>
+        /// Calculates position of the brick on the board.
+        /// </summary>
+        /// <param name="x">Displacement on horizontal direction.</param>
+        /// <param name="y">Displacement on vertival direction.</param>
+        /// <returns>Array of pixel positions.</returns>
+        private int[][] CalculateBrickPosition(int x, int y)
+        {
+            var result = new int[4][];
+            result = this.Shape.Pixels.Clone() as int[][];
+
+            foreach (int[] point in result)
+            {
+                point[0] += x;
+                point[1] += y;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Rotates brick shape 90° counterclockwise.
+        /// </summary>
+        public void Rotate()
+        {
+            var t = new int[4][];
+            switch (this.Shape)
+            {
+                default:
+                    break;
+            }
+        }
+
     }
 }
