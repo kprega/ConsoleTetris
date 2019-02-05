@@ -89,11 +89,22 @@ namespace ConsoleTetris
         /// </summary>
         public void Rotate()
         {
-            var t = new int[4][];
-            switch (this.Shape)
+            this.Shape.ToggleRotation();
+            var maxY = 0;
+            var maxX = 0;
+
+            foreach (var point in this.Shape.Pixels)
             {
-                default:
-                    break;
+                if (maxX < point[0]) maxX = point[0];
+                if (maxY < point[1]) maxY = point[1];
+            }
+
+            this.Pixels = this.Shape.Pixels;
+
+            foreach (var point in this.Pixels)
+            {
+                point[0] += maxX;
+                point[1] += maxY;
             }
         }
 

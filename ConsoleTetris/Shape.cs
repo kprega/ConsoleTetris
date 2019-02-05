@@ -45,6 +45,20 @@ namespace ConsoleTetris
             return _Random.Next(0, 3) * 90;
         }
 
+        public void ToggleRotation()
+        {
+            if(this.Rotation == 270)
+            {
+                this.Rotation = 0;
+                this.Pixels = this.GetPixelsDefinition();
+            }
+            else
+            {
+                this.Rotation += 90;
+                this.Pixels = this.GetPixelsDefinition();
+            }
+        }
+
         /// <summary>
         /// Defines pixels layout for given shape.
         /// </summary>
