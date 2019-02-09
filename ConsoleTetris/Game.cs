@@ -22,10 +22,15 @@ namespace ConsoleTetris
         private const byte LEVEL_X = 15;
         private const byte LEVEL_Y = 11;
 
+        private Random _Random = new Random();
+        private System.Diagnostics.Stopwatch _Stopwatch = new System.Diagnostics.Stopwatch();
+        private bool IsGameOver = false;
+
         public int Score { get; private set; }
         public int Level { get; private set; }
 
-        private Brick ActiveBrick { get; set; }
+        private BrickBase ActiveBrick { get; set; }
+        private BrickBase NextBrick { get; set; }
         private int[,] FieldStatus { get; set; }
         private ConsoleColor[,] FieldColor { get; set; } 
 
@@ -93,31 +98,40 @@ namespace ConsoleTetris
 
         public void Start()
         {
-            this.ActiveBrick = new Brick(X: WIDTH/2, Y: 1);
+            this._Stopwatch.Start();
+            this.ActiveBrick = GetRandomBrick();
+            this.ActiveBrick.Move(WIDTH / 2, 1);
+            this.ActiveBrick.Write();
 
-            while (this.ActiveBrick != null)
+            while (!IsGameOver)
             {
                 switch (Console.ReadKey().Key)
                 {
                     case ConsoleKey.DownArrow:
-                        if(this.ActiveBrick.Pixels.All(p => p[1] != HEIGHT) && 
+                        if (this.ActiveBrick.Pixels.All(p => p[1] != HEIGHT) &&
                            this.ActiveBrick.Pixels.All(p => FieldStatus[p[0] - 1, p[1]] == 0))
                         {
-                            this.MoveActiveBrick(0,1);
+                            this.ActiveBrick.Erase();
+                            this.ActiveBrick.Move(0, 1);
+                            this.ActiveBrick.Write();
                         }
                         break;
                     case ConsoleKey.RightArrow:
-                        if(this.ActiveBrick.Pixels.All(p => p[0] < WIDTH) &&
+                        if (this.ActiveBrick.Pixels.All(p => p[0] < WIDTH) &&
                            this.ActiveBrick.Pixels.All(p => FieldStatus[p[0], p[1] - 1] == 0))
                         {
-                            this.MoveActiveBrick(1, 0);
+                            this.ActiveBrick.Erase();
+                            this.ActiveBrick.Move(1, 0);
+                            this.ActiveBrick.Write();
                         }
                         break;
                     case ConsoleKey.LeftArrow:
-                        if(this.ActiveBrick.Pixels.All(p => p[0] > 1) &&
+                        if (this.ActiveBrick.Pixels.All(p => p[0] > 1) &&
                            this.ActiveBrick.Pixels.All(p => FieldStatus[p[0] - 2, p[1] - 1] == 0))
                         {
-                            this.MoveActiveBrick(-1, 0);
+                            this.ActiveBrick.Erase();
+                            this.ActiveBrick.Move(-1, 0);
+                            this.ActiveBrick.Write();
                         }
                         break;
                     case ConsoleKey.UpArrow:
@@ -126,7 +140,7 @@ namespace ConsoleTetris
                     default:
                         break;
                 }
-
+                
                 RepairRightEdge();
 
                 if (this.ActiveBrick.Pixels.Any(p => p[1] == HEIGHT) ||
@@ -151,7 +165,9 @@ namespace ConsoleTetris
                             }
                         }
                     }
-                    this.ActiveBrick = new Brick(X: WIDTH / 2, Y: 1);
+                    this.ActiveBrick = GetRandomBrick();
+                    this.ActiveBrick.Move(WIDTH / 2, 1);
+                    this.ActiveBrick.Write();
                 }
             }
         }
@@ -199,7 +215,7 @@ namespace ConsoleTetris
                     this.FieldColor[x, i] = this.FieldColor[x, i - 1];
                     Console.SetCursorPosition(x + 1, i + 1);
                     Console.ForegroundColor = this.FieldColor[x, i];
-                    Console.Write(this.ActiveBrick.Pixel);
+                    Console.Write('█');
                 }
             }
         }
@@ -223,22 +239,6 @@ namespace ConsoleTetris
         }
 
         /// <summary>
-        /// Moves current brick using given displacement parameters.
-        /// </summary>
-        /// <param name="dX">Number of pixels to move right.</param>
-        /// <param name="dY">Number of pixels to move down.</param>
-        private void MoveActiveBrick(int dX, int dY)
-        {
-            this.ActiveBrick.Erase();
-            foreach (int[] point in this.ActiveBrick.Pixels)
-            {
-                point[0] += dX;
-                point[1] += dY;
-            }
-            this.ActiveBrick.Write();
-        }
-
-        /// <summary>
         /// Rotates current brick 90° counterclockwise.
         /// </summary>
         private void RotateActiveBrick()
@@ -246,6 +246,68 @@ namespace ConsoleTetris
             this.ActiveBrick.Erase();
             this.ActiveBrick.Rotate();
             this.ActiveBrick.Write();
+        }
+
+        /// <summary>
+        /// Gets a brick with random shape and color.
+        /// </summary>
+        /// <returns>New brick.</returns>
+        private BrickBase GetRandomBrick()
+        {
+            BrickBase result = null;
+
+            var shape = GetRandomShape();
+            var color = GetRandomColor();
+
+            switch (shape)
+            {
+                case ShapeEnum.Square:
+                    result = new SquareBrick(color);
+                    break;
+                case ShapeEnum.S:
+                    result = new SShapedBrick(color);
+                    break;
+                case ShapeEnum.Z:
+                    result = new ZShapedBrick(color);
+                    break;
+                case ShapeEnum.T:
+                    result = new TShapedBrick(color);
+                    break;
+                case ShapeEnum.Long:
+                    result = new LongBrick(color);
+                    break;
+                case ShapeEnum.J:
+                    result = new JShapedBrick(color);
+                    break;
+                case ShapeEnum.L:
+                    result = new LShapedBrick(color);
+                    break;
+                default:
+                    break;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Chooses a random shape for the brick
+        /// </summary>
+        /// <returns>Random shape.</returns>
+        private ShapeEnum GetRandomShape()
+        {
+            var numberOfAvailableShapes = Enum.GetValues(typeof(ShapeEnum)).Length;
+            var randomIndex = _Random.Next(0, numberOfAvailableShapes - 1);
+            return (ShapeEnum)randomIndex;
+        }
+
+        /// <summary>
+        /// Chooses a random color for the brick.
+        /// </summary>
+        /// <returns>A random ConsoleColor, except black and white.</returns>
+        private ConsoleColor GetRandomColor()
+        {
+            var numberOfAvailableColors = Enum.GetValues(typeof(ConsoleColor)).Length;
+            var randomIndex = _Random.Next(1, numberOfAvailableColors - 2);
+            return (ConsoleColor)randomIndex;
         }
     }
 }

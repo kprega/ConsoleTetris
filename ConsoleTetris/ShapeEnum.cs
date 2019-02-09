@@ -9,11 +9,11 @@ namespace ConsoleTetris
     public enum ShapeEnum
     {
         Square,
-        LetterS,
-        LetterZ,
-        LetterT,
-        LetterI,
-        LetterJ,
-        LetterL
+        S,
+        Z,
+        T,
+        Long,
+        J,
+        L
     }
 }

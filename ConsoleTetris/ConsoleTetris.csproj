@@ -43,11 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BrickBase.cs" />
+    <Compile Include="JShapedBrick.cs" />
+    <Compile Include="LShapedBrick.cs" />
+    <Compile Include="TShapedBrick.cs" />
+    <Compile Include="ZShapedBrick.cs" />
+    <Compile Include="SShapedBrick.cs" />
+    <Compile Include="LongBrick.cs" />
+    <Compile Include="SquareBrick.cs" />
     <Compile Include="Game.cs" />
-    <Compile Include="Brick.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Shape.cs" />
     <Compile Include="ShapeEnum.cs" />
   </ItemGroup>
   <ItemGroup>
