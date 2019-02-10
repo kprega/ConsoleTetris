@@ -105,7 +105,9 @@ namespace ConsoleTetris
 
             while (!IsGameOver)
             {
-                switch (Console.ReadKey().Key)
+                ConsoleKey keyPressed;
+                KeyReader.TryReadKey(out keyPressed, 1000 - Level * 100);
+                switch (keyPressed)
                 {
                     case ConsoleKey.DownArrow:
                         if (this.ActiveBrick.Pixels.All(p => p[1] != HEIGHT) &&

@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="BrickBase.cs" />
     <Compile Include="JShapedBrick.cs" />
+    <Compile Include="KeyReader.cs" />
     <Compile Include="LShapedBrick.cs" />
     <Compile Include="TShapedBrick.cs" />
     <Compile Include="ZShapedBrick.cs" />
