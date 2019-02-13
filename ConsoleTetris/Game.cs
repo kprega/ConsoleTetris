@@ -106,7 +106,8 @@ namespace ConsoleTetris
             while (!IsGameOver)
             {
                 ConsoleKey keyPressed;
-                KeyReader.TryReadKey(out keyPressed, 1000 - Level * 100);
+                //KeyReader.TryReadKey(out keyPressed, 1000 - Level * 100);
+                keyPressed = Console.ReadKey().Key;
                 switch (keyPressed)
                 {
                     case ConsoleKey.DownArrow:
@@ -247,6 +248,19 @@ namespace ConsoleTetris
         {
             this.ActiveBrick.Erase();
             this.ActiveBrick.Rotate();
+            //check and move brick if rotation pushed it out the boundary
+            if (this.ActiveBrick.Pixels.Max(p => p[0]) > WIDTH)
+            {
+                this.ActiveBrick.Move(WIDTH - this.ActiveBrick.Pixels.Max(p => p[0]), 0);
+            }
+            if (this.ActiveBrick.Pixels.Min(p => p[0]) < 1)
+            {
+                this.ActiveBrick.Move(-this.ActiveBrick.Pixels.Min(p => p[0])+1, 0);
+            }
+            if (this.ActiveBrick.Pixels.Min(p => p[1]) < 1)
+            {
+                this.ActiveBrick.Move(0, -this.ActiveBrick.Pixels.Min(p => p[1]) + 1);
+            }
             this.ActiveBrick.Write();
         }
 
