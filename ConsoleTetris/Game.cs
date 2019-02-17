@@ -106,42 +106,51 @@ namespace ConsoleTetris
             while (!IsGameOver)
             {
                 ConsoleKey keyPressed;
-                //KeyReader.TryReadKey(out keyPressed, 1000 - Level * 100);
-                keyPressed = Console.ReadKey().Key;
-                switch (keyPressed)
+                if (_Stopwatch.ElapsedMilliseconds > 1000 - this.Level * 100)
                 {
-                    case ConsoleKey.DownArrow:
-                        if (this.ActiveBrick.Pixels.All(p => p[1] != HEIGHT) &&
-                           this.ActiveBrick.Pixels.All(p => FieldStatus[p[0] - 1, p[1]] == 0))
-                        {
-                            this.ActiveBrick.Erase();
-                            this.ActiveBrick.Move(0, 1);
-                            this.ActiveBrick.Write();
-                        }
-                        break;
-                    case ConsoleKey.RightArrow:
-                        if (this.ActiveBrick.Pixels.All(p => p[0] < WIDTH) &&
-                           this.ActiveBrick.Pixels.All(p => FieldStatus[p[0], p[1] - 1] == 0))
-                        {
-                            this.ActiveBrick.Erase();
-                            this.ActiveBrick.Move(1, 0);
-                            this.ActiveBrick.Write();
-                        }
-                        break;
-                    case ConsoleKey.LeftArrow:
-                        if (this.ActiveBrick.Pixels.All(p => p[0] > 1) &&
-                           this.ActiveBrick.Pixels.All(p => FieldStatus[p[0] - 2, p[1] - 1] == 0))
-                        {
-                            this.ActiveBrick.Erase();
-                            this.ActiveBrick.Move(-1, 0);
-                            this.ActiveBrick.Write();
-                        }
-                        break;
-                    case ConsoleKey.UpArrow:
-                        RotateActiveBrick();
-                        break;
-                    default:
-                        break;
+                    this.ActiveBrick.Erase();
+                    this.ActiveBrick.Move(0, 1);
+                    this.ActiveBrick.Write();
+                    _Stopwatch.Restart();
+                }
+                if(Console.KeyAvailable)
+                {
+                    keyPressed = Console.ReadKey().Key;
+                    switch (keyPressed)
+                    {
+                        case ConsoleKey.DownArrow:
+                            if (this.ActiveBrick.Pixels.All(p => p[1] != HEIGHT) &&
+                               this.ActiveBrick.Pixels.All(p => FieldStatus[p[0] - 1, p[1]] == 0))
+                            {
+                                this.ActiveBrick.Erase();
+                                this.ActiveBrick.Move(0, 1);
+                                this.ActiveBrick.Write();
+                            }
+                            break;
+                        case ConsoleKey.RightArrow:
+                            if (this.ActiveBrick.Pixels.All(p => p[0] < WIDTH) &&
+                               this.ActiveBrick.Pixels.All(p => FieldStatus[p[0], p[1] - 1] == 0))
+                            {
+                                this.ActiveBrick.Erase();
+                                this.ActiveBrick.Move(1, 0);
+                                this.ActiveBrick.Write();
+                            }
+                            break;
+                        case ConsoleKey.LeftArrow:
+                            if (this.ActiveBrick.Pixels.All(p => p[0] > 1) &&
+                               this.ActiveBrick.Pixels.All(p => FieldStatus[p[0] - 2, p[1] - 1] == 0))
+                            {
+                                this.ActiveBrick.Erase();
+                                this.ActiveBrick.Move(-1, 0);
+                                this.ActiveBrick.Write();
+                            }
+                            break;
+                        case ConsoleKey.UpArrow:
+                            RotateActiveBrick();
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 
                 RepairRightEdge();
