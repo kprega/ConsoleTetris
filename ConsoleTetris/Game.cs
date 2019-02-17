@@ -15,12 +15,14 @@ namespace ConsoleTetris
         private const byte HEIGHT = 20;
 
         /// <summary>
-        /// Defines location of score and level info 
+        /// Defines location of score, level and count of lines cleared info 
         /// </summary>
         private const byte SCORE_X = 15;
         private const byte SCORE_Y = 9;
         private const byte LEVEL_X = 15;
         private const byte LEVEL_Y = 11;
+        private const byte LINES_CLEARED_X = 15;
+        private const byte LINES_CLEARED_Y = 13;
 
         private Random _Random = new Random();
         private System.Diagnostics.Stopwatch _Stopwatch = new System.Diagnostics.Stopwatch();
@@ -28,6 +30,7 @@ namespace ConsoleTetris
 
         public int Score { get; private set; }
         public int Level { get; private set; }
+        public int LinesCleared { get; private set; }
 
         private BrickBase ActiveBrick { get; set; }
         private BrickBase NextBrick { get; set; }
@@ -40,6 +43,7 @@ namespace ConsoleTetris
             this.DrawBoard();
             this.DrawScore();
             this.DrawLevel();
+            this.DrawLinesCleared();
             this.FieldStatus = new int[WIDTH, HEIGHT];
             this.FieldColor = new ConsoleColor[WIDTH, HEIGHT];
             this.Start();
@@ -70,7 +74,7 @@ namespace ConsoleTetris
         {
             Console.ForegroundColor = ConsoleColor.White;
             Console.SetCursorPosition(SCORE_X, SCORE_Y);
-            Console.Write($"SCORE: {Score}");
+            Console.Write($"SCORE: {this.Score}");
         }
 
         /// <summary>
@@ -80,7 +84,17 @@ namespace ConsoleTetris
         {
             Console.ForegroundColor = ConsoleColor.White;
             Console.SetCursorPosition(LEVEL_X, LEVEL_Y);
-            Console.Write($"LEVEL: {Level}");
+            Console.Write($"LEVEL: {this.Level}");
+        }
+
+        /// <summary>
+        /// Writes count of cleared lines to the game board
+        /// </summary>
+        private void DrawLinesCleared()
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.SetCursorPosition(LINES_CLEARED_X, LINES_CLEARED_Y);
+            Console.Write($"LINES CLEARED: {this.LinesCleared}");
         }
 
         /// <summary>
@@ -171,7 +185,8 @@ namespace ConsoleTetris
                             this.ClearLine(y);
                             this.ShiftBricks(y);
                             this.IncreaseScore();
-                            if (this.Score % (this.Level * 100) == 0)
+                            this.IncreaseLinesCleared();
+                            if (this.LinesCleared % 10 == 0)
                             {
                                 this.IncreaseLevel();
                             }
@@ -248,6 +263,15 @@ namespace ConsoleTetris
         {
             this.Level += 1;
             this.DrawLevel();
+        }
+
+        /// <summary>
+        /// Increases count of lines cleared
+        /// </summary>
+        private void IncreaseLinesCleared()
+        {
+            this.LinesCleared += 1;
+            this.DrawLinesCleared();
         }
 
         /// <summary>
