@@ -119,6 +119,14 @@ namespace ConsoleTetris
 
             while (!IsGameOver)
             {
+                if (this.ActiveBrick.Pixels.Any(p => FieldStatus[p[0] - 1, p[1]] == 1))
+                {
+                    IsGameOver = true;
+                    Console.WriteLine("GAME OVER");
+                    Console.ReadKey();
+                    break;
+                }
+
                 ConsoleKey keyPressed;
                 if (_Stopwatch.ElapsedMilliseconds > 1000 - this.Level * 100)
                 {
