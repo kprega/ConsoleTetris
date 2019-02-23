@@ -17,6 +17,8 @@ namespace ConsoleTetris
         /// <summary>
         /// Defines location of score, level and count of lines cleared info 
         /// </summary>
+        private const byte NEXT_BRICK_X = 15;
+        private const byte NEXT_BRICK_Y = 2;
         private const byte SCORE_X = 15;
         private const byte SCORE_Y = 9;
         private const byte LEVEL_X = 15;
@@ -39,7 +41,7 @@ namespace ConsoleTetris
 
         public Game()
         {
-            this.Level = 1;
+            this.Level = 9;
             this.DrawBoard();
             this.DrawScore();
             this.DrawLevel();
@@ -98,6 +100,19 @@ namespace ConsoleTetris
         }
 
         /// <summary>
+        /// Writes next brick to the game board
+        /// </summary>
+        private void DrawNextBrick()
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.SetCursorPosition(NEXT_BRICK_X, NEXT_BRICK_Y);
+            Console.WriteLine("NEXT BRICK:");
+            Console.WriteLine();
+            this.NextBrick.Move(NEXT_BRICK_X + 2, NEXT_BRICK_Y + 2);
+            this.NextBrick.Write();
+        }
+
+        /// <summary>
         /// Redraws right edge of board
         /// </summary>
         private void RepairRightEdge()
@@ -116,6 +131,9 @@ namespace ConsoleTetris
             this.ActiveBrick = GetRandomBrick();
             this.ActiveBrick.Move(WIDTH / 2, 1);
             this.ActiveBrick.Write();
+
+            this.NextBrick = GetRandomBrick();
+            DrawNextBrick();
 
             while (!IsGameOver)
             {
@@ -200,9 +218,13 @@ namespace ConsoleTetris
                             }
                         }
                     }
-                    this.ActiveBrick = GetRandomBrick();
-                    this.ActiveBrick.Move(WIDTH / 2, 1);
+                    this.NextBrick.Erase();
+                    this.ActiveBrick = this.NextBrick;
+                    this.ActiveBrick.Move(-NEXT_BRICK_X - 2 + WIDTH /2 , -NEXT_BRICK_Y - 2 + 1);
+                    //this.ActiveBrick.Move(WIDTH / 2, 1);
                     this.ActiveBrick.Write();
+                    this.NextBrick = GetRandomBrick();
+                    this.DrawNextBrick();
                 }
             }
         }
