@@ -41,7 +41,7 @@ namespace ConsoleTetris
 
         public Game()
         {
-            this.Level = 9;
+            this.Level = 1;
             this.DrawBoard();
             this.DrawScore();
             this.DrawLevel();
@@ -311,6 +311,7 @@ namespace ConsoleTetris
         {
             this.ActiveBrick.Erase();
             this.ActiveBrick.Rotate();
+
             //check and move brick if rotation pushed it out the boundary
             if (this.ActiveBrick.Pixels.Max(p => p[0]) > WIDTH)
             {
@@ -323,6 +324,40 @@ namespace ConsoleTetris
             if (this.ActiveBrick.Pixels.Min(p => p[1]) < 1)
             {
                 this.ActiveBrick.Move(0, -this.ActiveBrick.Pixels.Min(p => p[1]) + 1);
+            }
+
+            // before writing brick back to the board it is necessary to check if it fits in new position
+            if (this.ActiveBrick.Pixels.Any(p => FieldStatus[p[0] - 1, p[1] - 1] == 1))
+            {
+                // brick after rotation does collide => move it to avoid collision
+                var collidingPixels = this.ActiveBrick.Pixels.Where(p => FieldStatus[p[0] - 1, p[1] - 1] == 1).ToList();
+                var xcoords = new List<int>();
+                var ycoords = new List<int>();
+                foreach (var point in collidingPixels)
+                {
+                    xcoords.Add(point[0]);
+                    ycoords.Add(point[1]);
+                }
+                if(this.ActiveBrick.Pixels.Max(p => p[0]) + xcoords.Count < WIDTH)
+                {
+                    this.ActiveBrick.Move(xcoords.Count, 0);
+                    // test if this position is not in another collision
+                    if (this.ActiveBrick.Pixels.Any(p => FieldStatus[p[0] - 1, p[1] - 1] == 1))
+                    {
+                        if (this.ActiveBrick.Pixels.Min(p => p[0]) - xcoords.Count > 1)
+                        {
+                            this.ActiveBrick.Move(-2 * xcoords.Count, 0);
+                            //check once again
+                            if (this.ActiveBrick.Pixels.Any(p => FieldStatus[p[0] - 1, p[1] - 1] == 1))
+                            {
+                                // if no position is free, then rotate back to initial rotation
+                                this.ActiveBrick.Rotate(); // +90
+                                this.ActiveBrick.Rotate(); // +180
+                                this.ActiveBrick.Rotate(); // +270
+                            }
+                        }
+                    }
+                }
             }
             this.ActiveBrick.Write();
         }
