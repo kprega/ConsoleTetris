@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Brick.cs" />
     <Compile Include="BrickBase.cs" />
     <Compile Include="JShapedBrick.cs" />
     <Compile Include="LShapedBrick.cs" />
