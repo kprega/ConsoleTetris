@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ConsoleTetris
 {
@@ -10,9 +6,18 @@ namespace ConsoleTetris
     {
         static void Main(string[] args)
         {
-            var game = new Game();
-            game.Start();
+            Game game;
+            ConsoleKey key;
+            
+            do
+            {
+                Console.Clear();
+                game = new Game();
+                game.Start();
 
+                Console.Write(" Do you want to play again? Y/N");
+                key = Console.ReadKey().Key;
+            } while (game.IsOver && key == ConsoleKey.Y);
         }
     }
 }
