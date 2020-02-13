@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace ConsoleTetris
 {
+    /// <summary>
+    /// Game class
+    /// </summary>
     class Game
     {
         private Random _Random = new Random();
