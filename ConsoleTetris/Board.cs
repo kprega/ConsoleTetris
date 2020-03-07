@@ -7,7 +7,12 @@ using System.Threading.Tasks;
 namespace ConsoleTetris
 {
     class Board
-    {       
+    {
+        /// <summary>
+        /// Pause message, displayed when game is paused.
+        /// </summary>
+        const string PAUSE_MESSAGE = "PAUSED";
+
         /// <summary>
         /// Labels providing some information about current game state and their locations in the console window.
         /// </summary>
@@ -29,6 +34,11 @@ namespace ConsoleTetris
         /// </summary>
         public ConsoleColor[,] FilledArea { get; private set; }
 
+        /// <summary>
+        /// Board constructor.
+        /// </summary>
+        /// <param name="theoreticalSize">Theoretical size of the board.</param>
+        /// <param name="boardScaling">Board scale multipliers.</param>
         public Board(int[] theoreticalSize, int[] boardScaling)
         {
             TheoreticalSize = theoreticalSize;
@@ -84,6 +94,33 @@ namespace ConsoleTetris
                 Console.SetCursorPosition(label.Value[0], label.Value[1]);
                 Console.Write(label.Key);
             }
+        }
+
+        /// <summary>
+        /// Displays blinking pause message.
+        /// </summary>
+        /// <param name="state">True if message should be visible, false otherwise.</param>
+        public void DisplayBlinkingPauseMessage(bool state)
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            if (state)
+            {
+                Console.SetCursorPosition(Labels.Last().Value[0], Labels.Last().Value[1] + 7);
+                Console.Write(PAUSE_MESSAGE);
+            }
+            else
+            {
+                ClearPauseMessage();
+            }
+        }
+
+        /// <summary>
+        /// Removes pause message from the board.
+        /// </summary>
+        public void ClearPauseMessage()
+        {
+            Console.SetCursorPosition(Labels.Last().Value[0], Labels.Last().Value[1] + 7);
+            Console.Write(new string(' ', PAUSE_MESSAGE.Length));
         }
 
         /// <summary>

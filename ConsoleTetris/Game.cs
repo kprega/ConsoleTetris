@@ -21,6 +21,7 @@ namespace ConsoleTetris
         private Brick ActiveBrick { get; set; }
         private Brick NextBrick { get; set; }
         private Board GameBoard { get; set; }
+        private bool IsPaused { get; set; }
         public bool IsOver { get; private set; }
 
         public Game()
@@ -92,7 +93,16 @@ namespace ConsoleTetris
                     ProcessUserInput(Console.ReadKey(true).Key);
                 }
 
-                if (_Stopwatch.ElapsedMilliseconds > 1000 - Level * 100) // falling down
+                if (IsPaused)
+                {
+                    GameBoard.DisplayBlinkingPauseMessage((_Stopwatch.ElapsedMilliseconds / 750 ) % 2 == 1); // blink interval = 750ms
+                }
+                else
+                {
+                    GameBoard.ClearPauseMessage();
+                }
+
+                if (!IsPaused && _Stopwatch.ElapsedMilliseconds > 1000 - Level * 100) // falling down
                 {
                     if (IsNewPositionValid(ActiveBrick.GetMovedPixels(0, 1)))
                     {
@@ -165,11 +175,14 @@ namespace ConsoleTetris
                     action = new Action(() => ActiveBrick.Rotate());
                     newPixels = ActiveBrick.GetRotatedPixels();
                     break;
+                case ConsoleKey.P:
+                    IsPaused = !IsPaused;
+                    break;
                 default:
                     break;
             }
 
-            if (action != null)
+            if (action != null && !IsPaused)
             {
                 if (IsNewPositionValid(newPixels))
                 {
