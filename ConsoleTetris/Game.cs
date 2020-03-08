@@ -142,7 +142,7 @@ namespace ConsoleTetris
             }
 
             Console.SetCursorPosition(GameBoard.Labels.Last().Value[0], GameBoard.Labels.Last().Value[1] + 6);
-            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.White;
             Console.Write("GAME OVER!");
         }
 
