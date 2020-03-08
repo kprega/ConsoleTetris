@@ -24,6 +24,9 @@ namespace ConsoleTetris
         private bool IsPaused { get; set; }
         public bool IsOver { get; private set; }
 
+        /// <summary>
+        /// Game constructor.
+        /// </summary>
         public Game()
         {
             Level = 1;
@@ -39,6 +42,11 @@ namespace ConsoleTetris
             IsOver = false;
         }
 
+        /// <summary>
+        /// Method to be called when a line of bricks stack is cleared.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void GameBoard_LineCleared(object sender, EventArgs e)
         {
             LinesCleared += 1;
@@ -52,6 +60,11 @@ namespace ConsoleTetris
             }
         }
 
+        /// <summary>
+        /// Writes information to game board.
+        /// </summary>
+        /// <param name="labelIndex">Index of information label.</param>
+        /// <param name="text">Text to be written next to the label.</param>
         private void UpdateInfo(int labelIndex, string text)
         {
             var pair = GameBoard.Labels.ElementAt(labelIndex);
@@ -75,7 +88,9 @@ namespace ConsoleTetris
             NextBrick.Write();
         }
 
-
+        /// <summary>
+        /// Starts the game.
+        /// </summary>
         public void Start()
         {
             _Stopwatch.Start();
@@ -153,6 +168,10 @@ namespace ConsoleTetris
             return (ConsoleColor)randomIndex;
         }
 
+        /// <summary>
+        /// Handles key pressed by the player.
+        /// </summary>
+        /// <param name="key">Key pressed by the player.</param>
         private void ProcessUserInput(ConsoleKey key)
         {
             var newPixels = new int[ActiveBrick.Pixels.GetLength(0)][];
@@ -194,6 +213,9 @@ namespace ConsoleTetris
             }
         }
 
+        /// <summary>
+        /// Settles active brick, i.e. active brick becomes part of the bricks stack.
+        /// </summary>
         private void SettleActiveBrick()
         {
             for (int i = 0; i < ActiveBrick.Pixels.Count(); i++)
@@ -204,6 +226,9 @@ namespace ConsoleTetris
             }
         }
 
+        /// <summary>
+        /// Prepares next brick to be active brick.
+        /// </summary>
         private void MakeNextBrickActive()
         {
             NextBrick.Erase();
@@ -218,6 +243,11 @@ namespace ConsoleTetris
             ActiveBrick.Write();
         }
 
+        /// <summary>
+        /// Checks if position of the brick after movement is valid.
+        /// </summary>
+        /// <param name="newPixels">Brick pixels after movement.</param>
+        /// <returns>True if position is valid, false otherwise.</returns>
         private bool IsNewPositionValid(int[][] newPixels)
         {
             var rightLimit = GameBoard.TheoreticalSize[0] * GameBoard.BoardScaling[0];
