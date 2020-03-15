@@ -110,7 +110,7 @@ namespace ConsoleTetris
 
                 if (IsPaused)
                 {
-                    GameBoard.DisplayBlinkingPauseMessage((_Stopwatch.ElapsedMilliseconds / 750 ) % 2 == 1); // blink interval = 750ms
+                    GameBoard.DisplayBlinkingPauseMessage((_Stopwatch.ElapsedMilliseconds / 750) % 2 == 1); // blink interval = 750ms
                 }
                 else
                 {
@@ -210,6 +210,30 @@ namespace ConsoleTetris
                     ActiveBrick.Write();
                     GameBoard.DrawFrame();
                 }
+                else if (key == ConsoleKey.Spacebar)
+                {
+                    var vector = new int[2];
+                    if (newPixels.Any(p => p[0] < 0))
+                        vector = new int[] { -(newPixels.Min(x => x[0]) - 1) / GameBoard.BoardScaling[0], 0 };
+                    if (newPixels.Any(p => p[0] > GameBoard.BoardScaling[0] * GameBoard.TheoreticalSize[0]))
+                        vector = new int[] { (GameBoard.BoardScaling[0] * GameBoard.TheoreticalSize[0] - (newPixels.Max(x => x[0]) + 1)) / GameBoard.BoardScaling[0], 0 };
+                    if (newPixels.Any(p => p[1] < 1))
+                        vector = new int[] { 0, 1 };
+                    foreach (var px in newPixels)
+                    {
+                        px[0] += vector[0] * GameBoard.BoardScaling[0];
+                        px[1] += vector[1] * GameBoard.BoardScaling[1];
+                    }
+                    if (IsNewPositionValid(newPixels))
+                    {
+                        ActiveBrick.Erase();
+                        action.Invoke();
+                        ActiveBrick.Move(vector[0], vector[1]);
+                        ActiveBrick.Write();
+                        GameBoard.DrawFrame();
+                    }
+
+                }
             }
         }
 
@@ -239,7 +263,7 @@ namespace ConsoleTetris
 
             ActiveBrick.Move(-x / GameBoard.BoardScaling[0], -y / GameBoard.BoardScaling[1]); // move to original position
             ActiveBrick.Move(GameBoard.TheoreticalSize[0] / 2 - 1, 0);                        // move to middle top of the board
-            
+
             ActiveBrick.Write();
         }
 
