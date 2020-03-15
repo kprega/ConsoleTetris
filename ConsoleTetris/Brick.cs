@@ -11,9 +11,9 @@ namespace ConsoleTetris
         static Dictionary<ShapeEnum, int[][]> ShapeDefinitions = new Dictionary<ShapeEnum, int[][]>()
         {
             { ShapeEnum.Z,      new int[][] { new int[2] { 0, 0 }, new int[2] { 1, 0 }, new int[2] { 1, 1 }, new int[2] { 2, 1 } } },
+            { ShapeEnum.S,      new int[][] { new int[2] { 2, 0 }, new int[2] { 1, 0 }, new int[2] { 1, 1 }, new int[2] { 0, 1 } } },
             { ShapeEnum.T,      new int[][] { new int[2] { 1, 0 }, new int[2] { 1, 1 }, new int[2] { 0, 1 }, new int[2] { 2, 1 } } },
             { ShapeEnum.Square, new int[][] { new int[2] { 0, 0 }, new int[2] { 1, 0 }, new int[2] { 0, 1 }, new int[2] { 1, 1 } } },
-            { ShapeEnum.S,      new int[][] { new int[2] { 1, 0 }, new int[2] { 2, 0 }, new int[2] { 1, 1 }, new int[2] { 0, 1 } } },
             { ShapeEnum.Long,   new int[][] { new int[2] { 0, 0 }, new int[2] { 1, 0 }, new int[2] { 2, 0 }, new int[2] { 3, 0 } } },
             { ShapeEnum.L,      new int[][] { new int[2] { 0, 0 }, new int[2] { 0, 1 }, new int[2] { 0, 2 }, new int[2] { 1, 2 } } },
             { ShapeEnum.J,      new int[][] { new int[2] { 1, 0 }, new int[2] { 1, 1 }, new int[2] { 0, 2 }, new int[2] { 1, 2 } } }
